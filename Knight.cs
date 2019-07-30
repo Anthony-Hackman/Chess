@@ -2,38 +2,39 @@
 
 namespace chess
 {
-	public class Pawn: ChessPiece
+	public class Knight: ChessPiece
 	{
 		private int pColor;
-		private const int type = 0;
+		private const int type = 1;
 		private int[] location;
-		public Pawn()
+		public Knight()
 		{
 			
 		}
-		
+
 		public int getPColor(){
 			return pColor;
 		}
-		
+
 		public int[] getLocation(){
 			return location;
 		}
-		
+
 		public int getType(){
 			return type;
 		}
-		
-		public int[] move(int[] board, int[]curLocation){
+
+		public int[] move(int[] board, int[] curLocation){
 			
 		}
-		
-		void setPColor(int c){
+
+		public void setPColor(int c){
 			pColor = c;
 		}
-		
-		void setLocation(int[] L){
+
+		public void setLocation(int[] L){
 			location = L;
 		}
+
 	}
 }
