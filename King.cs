@@ -5,11 +5,13 @@ namespace chess
 	public class King: ChessPiece
 	{
 		private int pColor;
-		private const int type = 5;
+		private const int type = 6;
 		private int[] location;
-		public King()
+		private int id;
+		public King(int num, int c)
 		{
-			
+			id = num;
+			pColor = c;
 		}
 
 		public int getPColor()
@@ -27,19 +29,18 @@ namespace chess
 			return type;
 		}
 
-		public int[] move(int[] board, int[] curLocation)
-		{
-			
+		public int[] move(int[] board){
+			return location;
 		}
 
-		public void setPColor(int c)
+		public void setLocation(int L1, int L2)
 		{
-			pColor = c;
-		}
-
-		public void setLocation(int[] L)
-		{
+			int[] L = {L1, L2};
 			location = L;
+		}
+		
+		public int getID(){
+			return id;
 		}
 	}
 }

@@ -1,23 +1,16 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Pharlex
- * Date: 7/10/2019
- * Time: 11:13 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
-using System;
+﻿using System;
 
 namespace chess
 {
 	
 	public interface ChessPiece
 	{
-		int getPColor();
+		//piece type pawn = 1, knight = 2, bishop = 3, rook = 4, queen = 5, king = 6
+		int getPColor();//0 for white 1 for black
 		int[] getLocation();
 		int getType(); //type of chess piece represented as an integer
-		int[] move(int[] board, int[] curLocation);
-		void setPColor(int c);
-		void setLocation(int[] L);
+		int[] move(int[] board);
+		void setLocation(int L1, int L2);
+		int getID();
 	}
 }
