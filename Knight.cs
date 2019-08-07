@@ -5,11 +5,13 @@ namespace chess
 	public class Knight: ChessPiece
 	{
 		private int pColor;
-		private const int type = 1;
+		private const int type = 2;
 		private int[] location;
-		public Knight()
+		private int id;
+		public Knight(int num, int c)
 		{
-			
+			id = num;
+			pColor = c;
 		}
 
 		public int getPColor(){
@@ -24,16 +26,17 @@ namespace chess
 			return type;
 		}
 
-		public int[] move(int[] board, int[] curLocation){
-			
+		public int[] move(int[] board){
+			return location;
 		}
 
-		public void setPColor(int c){
-			pColor = c;
-		}
-
-		public void setLocation(int[] L){
+		public void setLocation(int L1, int L2){
+			int[] L = {L1, L2};
 			location = L;
+		}
+		
+		public int getID(){
+			return id;
 		}
 
 	}
