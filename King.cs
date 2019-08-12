@@ -29,8 +29,9 @@ namespace chess
 			return type;
 		}
 
-		public int[] move(int[] board){
-			return location;
+		public int[][] move(ChessPiece[,] board, int colorSel){
+			int[][] locations = new int[64][];
+			return locations;
 		}
 
 		public void setLocation(int L1, int L2)
@@ -41,6 +42,14 @@ namespace chess
 		
 		public int getID(){
 			return id;
+		}
+		
+		public bool isCheck(){
+			return false;
+		}
+		
+		public bool isCheckmate(){
+			return false;
 		}
 	}
 }
