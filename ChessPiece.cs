@@ -9,7 +9,7 @@ namespace chess
 		int getPColor();//0 for white 1 for black
 		int[] getLocation();
 		int getType(); //type of chess piece represented as an integer
-		int[][] move(ChessPiece[,] board, int colorSel);/*determines the way each piece moves
+		int[][] moves(ChessPiece[,] board, int colorSel);/*determines the way each piece moves
 														passing colorSel to know which side of the board pieces started on*/
 		void setLocation(int L1, int L2);//sets the location of the piece on the board
 		int getID();
