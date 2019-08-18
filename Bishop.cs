@@ -26,7 +26,7 @@ namespace chess
 			return type;
 		}
 
-		public int[][] move(ChessPiece[,] board, int colorSel){
+		public int[][] moves(ChessPiece[,] board, int colorSel){
 			int[][] locations = new int[64][];
 			return locations;
 		}
