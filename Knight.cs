@@ -27,7 +27,124 @@ namespace chess
 		}
 
 		public int[][] moves(ChessPiece[,] board, int colorSel){
-			int[][] locations = new int[64][];
+			int[][] locations = new int[16][];
+			int i = 0;
+			//set of location[0]
+			int L1 = location[0]+1;
+			int L2 = location[0]+2;
+			int L3 = location[0]-1;
+			int L4 = location[0]-2;
+			
+			//set of location[1]
+			int L5 = location[1]+1;
+			int L6 = location[1]+2;
+			int L7 = location[1]-1;
+			int L8 = location[1]-2;
+			if(L1<=7){//checks if the location will be off the board same for the first set of nested if statements
+				if(L6<=7){
+					if(board[L1,L6]==null){//checks if the space is empty this is a valid location also stops the else if check from calling on a null piece
+						int[] newLoc = {L1 , L6};
+						locations[i] = newLoc;
+						i++;
+					}
+					else if(board[L1,L6].getPColor()!=pColor){//checks if the piece at the location is not the same color this is a valid location
+						int[] newLoc = {L1 , L6};
+						locations[i] = newLoc;
+						i++;
+					}
+				}
+				if(L8>=0){
+					if(board[L1,L8]==null){//checks if the space is empty this is a valid location also stops the else if check from calling on a null piece
+						int[] newLoc = {L1 , L8};
+						locations[i] = newLoc;
+						i++;
+					}
+					else if(board[L1,L8].getPColor()!=pColor){//checks if the piece at the location is not the same color this is a valid location
+						int[] newLoc = {L1 , L8};
+						locations[i] = newLoc;
+						i++;
+					}
+				}
+			}
+			if(L2<=7){
+				if(L5<=7){
+					if(board[L2,L5]==null){//checks if the space is empty this is a valid location also stops the else if check from calling on a null piece
+						int[] newLoc = {L2 , L5};
+						locations[i] = newLoc;
+						i++;
+					}
+					else if(board[L2,L5].getPColor()!=pColor){//checks if the piece at the location is not the same color this is a valid location
+						int[] newLoc = {L2 , L5};
+						locations[i] = newLoc;
+						i++;
+					}
+				}
+				if(L7>=0){
+					if(board[L2,L7]==null){//checks if the space is empty this is a valid location also stops the else if check from calling on a null piece
+						int[] newLoc = {L2 , L7};
+						locations[i] = newLoc;
+						i++;
+					}
+					else if(board[L2,L7].getPColor()!=pColor){//checks if the piece at the location is not the same color this is a valid location
+						int[] newLoc = {L2 , L7};
+						locations[i] = newLoc;
+						i++;
+					}
+				}
+			}
+			if(L3>=0){
+				if(L6<=7){
+					if(board[L3,L6]==null){//checks if the space is empty this is a valid location also stops the else if check from calling on a null piece
+						int[] newLoc = {L3 , L6};
+						locations[i] = newLoc;
+						i++;
+					}
+					else if(board[L3,L6].getPColor()!=pColor){//checks if the piece at the location is not the same color this is a valid location
+						int[] newLoc = {L3 , L6};
+						locations[i] = newLoc;
+						i++;
+					}
+				}
+				if(L8>=0){
+					if(board[L3,L8]==null){//checks if the space is empty this is a valid location also stops the else if check from calling on a null piece
+						int[] newLoc = {L3 , L8};
+						locations[i] = newLoc;
+						i++;
+					}
+					else if(board[L3,L8].getPColor()!=pColor){//checks if the piece at the location is not the same color this is a valid location
+						int[] newLoc = {L3 , L8};
+						locations[i] = newLoc;
+						i++;
+					}
+				}
+			}
+			if(L4>=0){
+				if(L5<=7){
+					if(board[L4,L5]==null){//checks if the space is empty this is a valid location also stops the else if check from calling on a null piece
+						int[] newLoc = {L4 , L5};
+						locations[i] = newLoc;
+						i++;
+					}
+					else if(board[L4,L5].getPColor()!=pColor){//checks if the piece at the location is not the same color this is a valid location
+						int[] newLoc = {L4 , L5};
+						locations[i] = newLoc;
+						i++;
+					}
+				}
+				if(L7>=0){
+					if(board[L4,L7]==null){//checks if the space is empty this is a valid location also stops the else if check from calling on a null piece
+						int[] newLoc = {L4 , L7};
+						locations[i] = newLoc;
+						i++;
+					}
+					else if(board[L4,L7].getPColor()!=pColor){//checks if the piece at the location is not the same color this is a valid location
+						int[] newLoc = {L4 , L7};
+						locations[i] = newLoc;
+						i++;
+					}
+				}
+			}
+			
 			return locations;
 		}
 

@@ -27,13 +27,20 @@ namespace chess
 		}
 		
 		public int[][] moves(ChessPiece[,] board, int colorSel){
-			int[][] locations = new int[3][];
+			int[][] locations = new int[4][];
 			int i = 0;
 			if(pColor==0&&colorSel==0){//piece started on the bottom of the screen board
 				if(board[location[0], location[1]-1]==null){
 					int[] newLoc = {location[0] , location[1]-1};
 					locations[i] = newLoc;
 					i++;
+					if(location[1]==6){//first turn gets to move up 2 if possible
+						if(board[location[0], location[1]-2]==null){
+							int[] newLoc1 = {location[0] , location[1]-2};
+							locations[i] = newLoc1;
+							i++;
+						}
+					}
 				}
 				if(location[0]!=7){
 					if(board[location[0]+1, location[1]-1]!=null){
@@ -59,6 +66,13 @@ namespace chess
 					int[] newLoc = {location[0] , location[1]+1};
 					locations[i] = newLoc;
 					i++;
+					if(location[1]==1){//first turn gets to move up 2 if possible
+						if(board[location[0], location[1]+2]==null){
+							int[] newLoc1 = {location[0] , location[1]+2};
+							locations[i] = newLoc1;
+							i++;
+						}
+					}
 				}
 				if(location[0]!=7){//make sure the pawn isnt along the edge to avoid out of bounds
 					if(board[location[0]+1, location[1]+1]!=null){//checks for pieces to its diagonal to attack

@@ -4,11 +4,8 @@
  * Time: 10:56 PM
  */
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.IO;
-using System.Threading;
 
 namespace chess
 {
@@ -18,6 +15,7 @@ namespace chess
 		private Board game;
 		private int turn = 0;//turn starts with white
 		private int colorSel;
+		private int pawnSel=0;
 		private ChessPiece selectedPiece = null;//the most recently clicked piece
 		private int[][] moves = null;//a list of the moves that the most recently clicked piece can make
 		public MainForm()
@@ -37,7 +35,6 @@ namespace chess
 					boardButtons[i,j] = new Button();
 					boardButtons[i,j].Location = new Point(i*50,j*50);
 					boardButtons[i,j].Size = new Size(50,50);
-					boardButtons[i,j].EnabledChanged +=button_EnabledChanged;
 					boardButtons[i,j].Paint +=button_Paint;
 					boardButtons[i,j].Enabled = false;
 					if(gameBoard[i,j]!=null){
@@ -55,18 +52,23 @@ namespace chess
 							if(gameBoard[i,j].getType()==3){
 								boardButtons[i,j].Text = "Bi";
 								boardButtons[i,j].ForeColor = Color.White;
+								boardButtons[i,j].Enabled = true;
 							}
 							if(gameBoard[i,j].getType()==4){
 								boardButtons[i,j].Text = "Ro";
 								boardButtons[i,j].ForeColor = Color.White;
+								boardButtons[i,j].Enabled = true;
 							}
 							if(gameBoard[i,j].getType()==5){
 								boardButtons[i,j].Text = "Qu";
 								boardButtons[i,j].ForeColor = Color.White;
+								boardButtons[i,j].Enabled = true;
+								boardButtons[i,j].Enabled = true;
 							}
 							if(gameBoard[i,j].getType()==6){
 								boardButtons[i,j].Text = "Ki";
 								boardButtons[i,j].ForeColor = Color.White;
+								boardButtons[i,j].Enabled = true;
 							}
 						}
 						else{
@@ -107,12 +109,64 @@ namespace chess
 		}
 		
 		private int pieceSelect(){//piece selection menu for the pawn reaching end of board
+			var popupForm = new Form();
+			popupForm.ControlBox = false;
+			Label label = new Label();
+			label.Text = "Select a Piece";
+			label.Location = new Point(20, 0);
+			RadioButton kn = new RadioButton();
+			kn.Text = "Knight";
+			kn.CheckedChanged += radioButton_checkedChanged;
+			kn.Location = new Point(10, 20);
 			
-			return 1;
+			RadioButton bi = new RadioButton();
+			bi.Text = "Bishop";
+			bi.CheckedChanged += radioButton_checkedChanged;
+			bi.Location = new Point(10, 40);
+			
+			RadioButton ro = new RadioButton();
+			ro.Text = "Rook";
+			ro.CheckedChanged += radioButton_checkedChanged;
+			ro.Location = new Point(10, 60);
+			
+			RadioButton qu = new RadioButton();
+			qu.Text = "Queen";
+			qu.CheckedChanged += radioButton_checkedChanged;
+			qu.Location = new Point(10, 80);
+			
+			popupForm.Controls.Add(label);
+			popupForm.Controls.Add(kn);
+			popupForm.Controls.Add(bi);
+			popupForm.Controls.Add(ro);
+			popupForm.Controls.Add(qu);
+			popupForm.ShowDialog();
+			int selection = pawnSel;
+			pawnSel = 0;
+			return selection;
 		}
 		
 		
 		//event handlers for the chess game
+		
+		private void radioButton_checkedChanged(object sender, System.EventArgs e)
+		{
+			if(((RadioButton)sender).Text=="Knight"){
+				pawnSel = 2;
+				((Form)((RadioButton)sender).GetContainerControl()).Close();
+			}
+			if(((RadioButton)sender).Text=="Bishop"){
+				pawnSel = 3;
+				((Form)((RadioButton)sender).GetContainerControl()).Close();
+			}
+			if(((RadioButton)sender).Text=="Rook"){
+				pawnSel = 4;
+				((Form)((RadioButton)sender).GetContainerControl()).Close();
+			}
+			if(((RadioButton)sender).Text=="Queen"){
+				pawnSel = 5;
+				((Form)((RadioButton)sender).GetContainerControl()).Close();
+			}
+		}
 		
 		private void button_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
 		{
@@ -277,7 +331,8 @@ namespace chess
 					boardButtons[moves[z][0], moves[z][1]].Enabled = false;
 					z++;
 				}
-				//set new location of selected piece to correct display
+				
+				//set new location of selected piece to correct display mostly for color of piece and handles some special case moves
 				if(selectedPiece.getType()==1){
 					boardButtons[i,j].Text = "Pa";
 					if(selectedPiece.getPColor()==0){
@@ -340,6 +395,26 @@ namespace chess
 				}
 				if(selectedPiece.getType()==6){
 					boardButtons[i,j].Text = "Ki";
+					if(i-selectedPiece.getLocation()[0]>1){//castle move
+						//sets the new location for the rook
+						boardButtons[i-1,j].Text = "Ro";
+						boardButtons[i-1,j].Enabled = true;
+						game.getBoard()[7,j].setLocation(i-1,j);
+						game.getBoard()[i-1,j] = game.getBoard()[7,j];
+						game.getBoard()[7,j] = null;
+						boardButtons[7,j].Text = "";
+						boardButtons[7,j].Enabled = false;
+					}
+					if(selectedPiece.getLocation()[0]-i>1){//castle move
+						//sets the new location for the rook
+						boardButtons[i+1,j].Text = "Ro";
+						boardButtons[i+1,j].Enabled = true;
+						game.getBoard()[0,j].setLocation(i+1,j);
+						game.getBoard()[i+1,j] = game.getBoard()[0,j];
+						game.getBoard()[0,j] = null;
+						boardButtons[0,j].Text = "";
+						boardButtons[0,j].Enabled = false;
+					}
 					if(selectedPiece.getPColor()==0){
 						boardButtons[i,j].ForeColor = Color.White;
 					}
