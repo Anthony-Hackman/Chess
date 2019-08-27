@@ -53,6 +53,9 @@ namespace chess
 							endSide1=true;
 						}
 						else if(board[location[0]+i,location[1]].getPColor()==pColor){//one of your pieces stop checking this way
+							int[] newLoc = {location[0]+i , location[1]};
+							locations[j] = newLoc;
+							j++;
 							endSide1=true;
 						}
 					}
@@ -71,6 +74,9 @@ namespace chess
 							endSide2=true;
 						}
 						else if(board[location[0]-i,location[1]].getPColor()==pColor){//one of your pieces stop checking this way
+							int[] newLoc = {location[0]-i , location[1]};
+							locations[j] = newLoc;
+							j++;
 							endSide2=true;
 						}
 					}
@@ -89,6 +95,9 @@ namespace chess
 							endSide3=true;
 						}
 						else if(board[location[0],location[1]+i].getPColor()==pColor){//one of your pieces stop checking this way
+							int[] newLoc = {location[0] , location[1]+i};
+							locations[j] = newLoc;
+							j++;
 							endSide3=true;
 						}
 					}
@@ -107,6 +116,9 @@ namespace chess
 							endSide4=true;
 						}
 						else if(board[location[0],location[1]-i].getPColor()==pColor){//one of your pieces stop checking this way
+							int[] newLoc = {location[0] , location[1]-i};
+							locations[j] = newLoc;
+							j++;
 							endSide4=true;
 						}
 					}

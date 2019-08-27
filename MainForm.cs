@@ -106,6 +106,22 @@ namespace chess
 		
 		private void changeTurn(){//handles all the turn change necessities
 			
+			/*call moves of pieces whose turn it is and null out any moves that are of a piece that is the same color
+			check for moves that are not null if there are any enable the button for that piece otherwise don't
+			find a way to only enable moves that get you out of check when you are in check*/
+			
+			turn++;
+			turn = turn%2;
+			for(int i=0; i<8; i++){
+				for(int j=0; j<8; j++){
+					boardButtons[i,j].Enabled = false;//disable all buttons to reset for next person's turn
+					if(game.getBoard()[i,j]!=null){//can't call a function on a null object
+						if(game.getBoard()[i,j].getPColor()==turn){//enable any buttons that have a current turn
+							boardButtons[i,j].Enabled = true;
+						}
+					}
+				}
+			}
 		}
 		
 		private int pieceSelect(){//piece selection menu for the pawn reaching end of board
@@ -212,35 +228,61 @@ namespace chess
 			//handles the movement of pieces on the board
 			if(game.getBoard()[i,j]!=null){//a piece is selected on the board and not a blank space
 				ChessPiece curPiece = game.getBoard()[i,j];//current piece
-				z =0;
+				z=0;
 				if(moves==null||selectedPiece==null){//handles a weird case where selectedPiece somehow ends up null 
 					//and moves isn't null and handles first piece clicked for the persons turn
 					moves = null;//sets to null in weird case that moves isn't null and selectedPiece is null
 					moves = curPiece.moves(game.getBoard(), colorSel);
 					while(z<moves.Length&&moves[z]!=null){//once the possible moves are found set those locations to be clickable
-						boardButtons[moves[z][0], moves[z][1]].Enabled = true;
-						selectedPiece = curPiece;
-						z++;
+						if(game.getBoard()[moves[z][0], moves[z][1]]==null){
+							boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							selectedPiece = curPiece;
+							z++;
+						}
+						else if(game.getBoard()[moves[z][0], moves[z][1]].getPColor()!=curPiece.getPColor()){
+							boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							selectedPiece = curPiece;
+							z++;
+						}
+						else{//null out any moves that are of the same color of the piece being moved, those are in the moves list for the isCheck function
+							moves[z]=null;
+							z++;
+						}
 					}
 				}
 				else if(selectedPiece.getPColor()==curPiece.getPColor()){//handles if the next click is another one of the same persons turn
-					while(z<moves.Length&&moves[z]!=null){//set old moves list to unclickable
-						boardButtons[moves[z][0], moves[z][1]].Enabled = false;
+					while(z<moves.Length){//set old moves list to unclickable
+						if(moves[z]!=null){
+							boardButtons[moves[z][0], moves[z][1]].Enabled = false;
+						}
 						z++;
 					}
 					moves = null;
 					z=0;
 					moves = curPiece.moves(game.getBoard(), colorSel);
 					while(z<moves.Length&&moves[z]!=null){//once the possible moves are found set those locations to be clickable
-						boardButtons[moves[z][0], moves[z][1]].Enabled = true;
-						selectedPiece = curPiece;
-						z++;
+						if(game.getBoard()[moves[z][0], moves[z][1]]==null){
+							boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							selectedPiece = curPiece;
+							z++;
+						}
+						else if(game.getBoard()[moves[z][0], moves[z][1]].getPColor()!=curPiece.getPColor()){//only allow movement to locations that aren't your own pieces
+							boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							selectedPiece = curPiece;
+							z++;
+						}
+						else{//null out any moves that are of the same color of the piece being moved, those are in the moves list for the isCheck function
+							moves[z] = null;
+							z++;
+						}
 					}
 				}
 				else{//enemy piece was selected after you selected a piece to move
 					z=0;
-					while(z<moves.Length&&moves[z]!=null){//set old moves list to unclickable since your piece is moving
-						boardButtons[moves[z][0], moves[z][1]].Enabled = false;
+					while(z<moves.Length){//set old moves list to unclickable since your piece is moving
+						if(moves[z]!=null){
+							boardButtons[moves[z][0], moves[z][1]].Enabled = false;
+						}
 						z++;
 					}
 					//set new location of selected piece to correct display
@@ -322,6 +364,7 @@ namespace chess
 					game.getBoard()[i,j] = selectedPiece;
 					game.getBoard()[selectedPiece.getLocation()[0], selectedPiece.getLocation()[1]] = null;
 					selectedPiece.setLocation(i,j);
+					selectedPiece = null;
 					changeTurn();
 				}
 			}
@@ -431,6 +474,7 @@ namespace chess
 				game.getBoard()[i,j] = selectedPiece;
 				game.getBoard()[selectedPiece.getLocation()[0], selectedPiece.getLocation()[1]] = null;
 				selectedPiece.setLocation(i,j);
+				selectedPiece = null;
 				changeTurn();
 				
 			}

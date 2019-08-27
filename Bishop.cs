@@ -49,6 +49,9 @@ namespace chess
 								endAngle1=true;
 							}
 							else if(board[location[0]+i,location[1]+i].getPColor()==pColor){//if you hit your own piece no need to check that direction anymore
+								int[] newLoc = {location[0]+i , location[1]+i};
+								locations[j] = newLoc;
+								j++;
 								endAngle1=true;
 							}
 						}
@@ -67,6 +70,9 @@ namespace chess
 								endAngle2=true;
 							}
 							else if(board[location[0]+i,location[1]-i].getPColor()==pColor){//if you hit your own piece no need to check that direction anymore
+								int[] newLoc = {location[0]+i , location[1]-i};
+								locations[j] = newLoc;
+								j++;
 								endAngle2=true;
 							}
 						}
@@ -87,6 +93,9 @@ namespace chess
 								endAngle3=true;
 							}
 							else if(board[location[0]-i,location[1]+i].getPColor()==pColor){//if you hit your own piece no need to check that direction anymore
+								int[] newLoc = {location[0]-i , location[1]+i};
+								locations[j] = newLoc;
+								j++;
 								endAngle3=true;
 							}
 						}
@@ -105,6 +114,9 @@ namespace chess
 								endAngle4=true;
 							}
 							else if(board[location[0]-i,location[1]-i].getPColor()==pColor){//if you hit your own piece no need to check that direction anymore
+								int[] newLoc = {location[0]-i , location[1]-i};
+								locations[j] = newLoc;
+								j++;
 								endAngle4=true;
 							}
 						}
