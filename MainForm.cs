@@ -6,14 +6,15 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace chess
 {
 	public partial class MainForm : Form
 	{
-		Button[,] boardButtons = new Button[8,8];
+		private Button[,] boardButtons = new Button[8,8];
 		private Board game;
-		private int turn = 0;//turn starts with white
+		private int turn;//turn starts with white
 		private int colorSel;
 		private int pawnSel=0;
 		private ChessPiece selectedPiece = null;//the most recently clicked piece
@@ -23,12 +24,10 @@ namespace chess
 			InitializeComponent();
 			this.Height=500;
 			this.Width=500;
-			colorSel = 0;
-			initializeGame();
+			mainMenu();
 		}
 		
 		private void initializeGame(){//call to set up the gameboard
-			game = new Board(colorSel);
 			ChessPiece[,] gameBoard = game.getBoard();
 			for(int i=0; i<8; i++){//maps the gameboard to buttons for the ui
 				for(int j=0; j<8; j++){
@@ -42,53 +41,82 @@ namespace chess
 							if(gameBoard[i,j].getType()==1){
 								boardButtons[i,j].Text = "Pa";
 								boardButtons[i,j].ForeColor = Color.White;
-								boardButtons[i,j].Enabled = true;
+								if(turn==0){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==2){
 								boardButtons[i,j].Text = "Kn";
 								boardButtons[i,j].ForeColor = Color.White;
-								boardButtons[i,j].Enabled = true;
+								if(turn==0){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==3){
 								boardButtons[i,j].Text = "Bi";
 								boardButtons[i,j].ForeColor = Color.White;
-								boardButtons[i,j].Enabled = true;
+								if(turn==0){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==4){
 								boardButtons[i,j].Text = "Ro";
 								boardButtons[i,j].ForeColor = Color.White;
-								boardButtons[i,j].Enabled = true;
+								if(turn==0){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==5){
 								boardButtons[i,j].Text = "Qu";
 								boardButtons[i,j].ForeColor = Color.White;
-								boardButtons[i,j].Enabled = true;
-								boardButtons[i,j].Enabled = true;
+								if(turn==0){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==6){
 								boardButtons[i,j].Text = "Ki";
 								boardButtons[i,j].ForeColor = Color.White;
-								boardButtons[i,j].Enabled = true;
+								if(turn==0){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 						}
 						else{
 							if(gameBoard[i,j].getType()==1){
 								boardButtons[i,j].Text = "Pa";
+								if(turn==1){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==2){
 								boardButtons[i,j].Text = "Kn";
+								if(turn==1){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==3){
 								boardButtons[i,j].Text = "Bi";
+								if(turn==1){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==4){
 								boardButtons[i,j].Text = "Ro";
+								if(turn==1){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==5){
 								boardButtons[i,j].Text = "Qu";
+								if(turn==1){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 							if(gameBoard[i,j].getType()==6){
 								boardButtons[i,j].Text = "Ki";
+								if(turn==1){
+									boardButtons[i,j].Enabled = true;
+								}
 							}
 						}
 					}
@@ -102,6 +130,11 @@ namespace chess
 					Controls.Add(boardButtons[i,j]);
 				}
 			}
+			Button saveBtn = new Button();
+			saveBtn.Click+=saveButton_Click;
+			saveBtn.Text = "Save Game";
+			saveBtn.Location = new Point(350,420);
+			Controls.Add(saveBtn);
 		}
 		
 		private void changeTurn(){//handles all the turn change necessities
@@ -126,7 +159,8 @@ namespace chess
 		
 		private int pieceSelect(){//piece selection menu for the pawn reaching end of board
 			var popupForm = new Form();
-			popupForm.ControlBox = false;
+			popupForm.ControlBox = false;//you must select a piece to change to
+			
 			Label label = new Label();
 			label.Text = "Select a Piece";
 			label.Location = new Point(20, 0);
@@ -160,6 +194,8 @@ namespace chess
 			pawnSel = 0;
 			return selection;
 		}
+		
+		
 		
 		
 		//event handlers for the chess game
@@ -377,6 +413,11 @@ namespace chess
 				
 				//set new location of selected piece to correct display mostly for color of piece and handles some special case moves
 				if(selectedPiece.getType()==1){
+					if(selectedPiece.getLocation()[0]!=i&&game.getBoard()[i,j]==null){//if the pawn is making a diagonal move into an empty space this is a special move taking an enemy pawn off its first turn move
+						//set the enemy pawns location to null and empty
+						game.getBoard()[i,selectedPiece.getLocation()[1]] = null;
+						boardButtons[i,selectedPiece.getLocation()[1]].Text = "";
+					}
 					boardButtons[i,j].Text = "Pa";
 					if(selectedPiece.getPColor()==0){
 						boardButtons[i,j].ForeColor = Color.White;
@@ -475,9 +516,255 @@ namespace chess
 				game.getBoard()[selectedPiece.getLocation()[0], selectedPiece.getLocation()[1]] = null;
 				selectedPiece.setLocation(i,j);
 				selectedPiece = null;
+				for(int r=0; r<game.getPieces().Length; r++){
+					if(game.getPieces()[r].getLocation()[0]==-1){//this piece isn't on the board don't bother checking it
+						
+					}
+					else if(game.getBoard()[game.getPieces()[r].getLocation()[0],game.getPieces()[r].getLocation()[1]]==null){
+						game.getPieces()[r].setLocation(-1,-1);//the piece is no longer on the board, set its location to off the board
+					}
+					else if(game.getBoard()[game.getPieces()[r].getLocation()[0],game.getPieces()[r].getLocation()[1]].getID()!=game.getPieces()[r].getID()){//check if the piece is no longer on the board
+						game.getPieces()[r].setLocation(-1,-1);//the piece is no longer on the board, set its location to off the board
+					}
+					//this is for the save and load features as well as the movesInCheck function
+				}
 				changeTurn();
 				
 			}
+		}
+		
+		private void newGameButton_Click(object sender, 
+		System.EventArgs e){//handles button click for a new game
+			Controls.Clear();
+			Label label = new Label();
+			label.Text = "Select a Color";
+			label.Location = new Point(20, 10);
+			
+			Button white = new Button();
+			white.Text = "white";
+			white.Location = new Point(10, 40);
+			white.Click += whiteButton_Click;
+			
+			Button black = new Button();
+			black.Text = "Black";
+			black.Location = new Point(10, 80);
+			black.Click += blackButton_Click;
+			
+			Controls.Add(label);
+			Controls.Add(white);
+			Controls.Add(black);
+		}
+		
+		private void loadGameButton_Click(object sender, 
+		System.EventArgs e){
+			load();
+		}
+		
+		private void whiteButton_Click(object sender, 
+		System.EventArgs e){//if white is clicked upon new game selection set colorSel to 0
+			colorSel = 0;
+			Controls.Clear();
+			game = new Board(colorSel);
+			turn = 0;
+			initializeGame();
+		}
+		
+		private void blackButton_Click(object sender, 
+		System.EventArgs e){//if black is clicked upon new game selection set colorSel to 1
+			colorSel = 1;
+			Controls.Clear();
+			game = new Board(colorSel);
+			turn = 0;
+			initializeGame();
+		}
+		
+		private void saveButton_Click(object sender, 
+		System.EventArgs e){
+			save();
+		}
+		
+		
+		
+		//end event handlers
+		
+		public void save(){//saves the data of the current game for loading later
+			var projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+			var fileDir = Path.Combine(projectFolder, @"SaveData");
+			(new FileInfo(fileDir)).Directory.Create();
+			var file = Path.Combine(projectFolder, @"SaveData\save.txt");
+            String saveData = "";
+            for(int i=0; i<game.getPieces().Length; i++){//starts with piece type of the first piece then color and then the location numbers
+            	saveData+=game.getPieces()[i].getType().ToString();
+            	saveData+=game.getPieces()[i].getPColor().ToString();
+            	saveData+=game.getPieces()[i].getLocation()[0].ToString();
+            	saveData+=game.getPieces()[i].getLocation()[1].ToString();
+            	if(game.getPieces()[i].getType()==1){
+            		saveData+=((Pawn) game.getPieces()[i]).getFirstMove();
+            	}
+            	if(game.getPieces()[i].getType()==4){
+            		saveData+=((Rook) game.getPieces()[i]).getFirstMove();
+            	}
+            	if(game.getPieces()[i].getType()==6){
+            		saveData+=((King) game.getPieces()[i]).getFirstMove();
+            	}
+            }
+            saveData+=":";//finally adds in the color selected when the game was first started separated with a : so it doesn't attempt to create a new piece
+            saveData+=colorSel.ToString();
+            saveData+=turn;
+			File.WriteAllText(file, saveData);
+		}
+		
+		
+		public void load(){//used to load a previously saved game
+			Controls.Clear();
+			var projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+            var file = Path.Combine(projectFolder, @"SaveData\save.txt");
+            Char[] loadData = File.ReadAllText(file).ToCharArray();
+            int i=0;
+            int j=0;
+            ChessPiece[] pcs = new ChessPiece[32];
+           	while(i<loadData.Length){//starts from the first char in the save file which is the type of the first piece in the list
+            	//creates new pieces from the data in the save file and adds them to a list of chesspieces to be passed to the board creation
+            	if(loadData[i]=='1'){
+            		i++;
+            		pcs[j] = new Pawn(j,loadData[i]-48);
+            		i++;
+            		if(loadData[i]=='-'){
+            			pcs[j].setLocation(-1,-1);
+            			i+=4;
+            		}
+            		else{
+            			pcs[j].setLocation(loadData[i]-48,loadData[i+1]-48);
+            			i+=2;
+            		}
+            		if(loadData[i]!='0'){
+            			((Pawn) pcs[j]).setFirstMove(loadData[i]-48);
+            			i++;
+            		}
+            		else{
+            			i++;
+            		}
+            		j++;
+            	}
+            	if(loadData[i]=='2'){
+            		i++;
+            		pcs[j] = new Knight(j,loadData[i]-48);
+            		i++;
+            		if(loadData[i]=='-'){
+            			pcs[j].setLocation(-1,-1);
+            			i+=4;
+            		}
+            		else{
+            			pcs[j].setLocation(loadData[i]-48,loadData[i+1]-48);
+            			i+=2;
+            		}
+            		j++;
+            	}
+            	if(loadData[i]=='3'){
+            		i++;
+            		pcs[j] = new Bishop(j,loadData[i]-48);
+            		i++;
+            		if(loadData[i]=='-'){
+            			pcs[j].setLocation(-1,-1);
+            			i+=4;
+            		}
+            		else{
+            			pcs[j].setLocation(loadData[i]-48,loadData[i+1]-48);
+            			i+=2;
+            		}
+            		j++;
+            	}
+            	if(loadData[i]=='4'){
+            		i++;
+            		pcs[j] = new Rook(j,loadData[i]-48);
+            		i++;
+            		if(loadData[i]=='-'){
+            			pcs[j].setLocation(-1,-1);
+            			i+=4;
+            		}
+            		else{
+            			pcs[j].setLocation(loadData[i]-48,loadData[i+1]-48);
+            			i+=2;
+            		}
+            		if(loadData[i]!='0'){
+            			((Rook) pcs[j]).setFirstMove(loadData[i]-48);
+            			i++;
+            		}
+            		else{
+            			i++;
+            		}
+            		j++;
+            	}
+            	if(loadData[i]=='5'){
+            		i++;
+            		pcs[j] = new Queen(j,loadData[i]-48);
+            		i++;
+            		if(loadData[i]=='-'){
+            			pcs[j].setLocation(-1,-1);
+            			i+=4;
+            		}
+            		else{
+            			pcs[j].setLocation(loadData[i]-48,loadData[i+1]-48);
+            			i+=2;
+            		}
+            		j++;
+            	}
+            	if(loadData[i]=='6'){
+            		i++;
+            		pcs[j] = new King(j,loadData[i]-48);
+            		i++;
+            		if(loadData[i]=='-'){
+            			pcs[j].setLocation(-1,-1);
+            			i+=4;
+            		}
+            		else{
+            			pcs[j].setLocation(loadData[i]-48,loadData[i+1]-48);
+            			i+=2;
+            		}
+            		if(loadData[i]!='0'){
+            			((King) pcs[j]).setFirstMove(loadData[i]-48);
+            			i++;
+            		}
+            		else{
+            			i++;
+            		}
+            		j++;
+            	}
+            	if(loadData[i]==':'){//: means the next char is the color selection
+            		i++;
+            		colorSel=((int)loadData[i]-48);
+            		i++;
+            		turn = loadData[i]-48;
+            		break;
+            	}
+            }
+           	
+            game = new Board(colorSel, pcs);
+            initializeGame();
+		}
+		
+		public void mainMenu(){//sets up main menu for selecting if you want to play a new game or load the saved game
+			Button newGameBtn = new Button();
+			newGameBtn.Click+=newGameButton_Click;
+			newGameBtn.Text = "New Game";
+			newGameBtn.Location = new Point(10, 20);
+			
+			Button loadGameBtn = new Button();
+			loadGameBtn.Click+=loadGameButton_Click;
+			loadGameBtn.Text = "Load Game";
+			loadGameBtn.Location = new Point(10, 50);
+			var projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+            var file = Path.Combine(projectFolder, @"SaveData\save.txt");
+            if(File.Exists(file)){//checks if the save file exists
+            	loadGameBtn.Enabled = true;
+            }
+            else{
+            	loadGameBtn.Enabled = false;
+            }
+			
+			
+			Controls.Add(newGameBtn);
+			Controls.Add(loadGameBtn);
 		}
 		
 	}

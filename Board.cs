@@ -6,6 +6,8 @@ namespace chess
 	{
 		private ChessPiece[] chessPieces = new ChessPiece[32];
 		private ChessPiece[,] chessBoard = new ChessPiece[8,8];
+		
+		
 		public Board(int colorSel){//player selected color as input
 			int horizontal = 0;//for setting up the board keeping track of which horizonal line it is on
 			int pieceNum = 0;//for tracking which piece in pieces is being setup on the board
@@ -177,6 +179,16 @@ namespace chess
 			}
 			
 		}
+		
+		public Board(int colorSel, ChessPiece[] pcs){//creates a board from a list of chesspieces
+			chessPieces = pcs;
+			for(int i=0; i<chessPieces.Length; i++){
+				if(chessPieces[i].getLocation()[0]!=-1){
+					chessBoard[chessPieces[i].getLocation()[0],chessPieces[i].getLocation()[1]]=chessPieces[i];
+				}
+			}
+		}
+		
 		
 		public ChessPiece[] getPieces(){
 			return chessPieces;

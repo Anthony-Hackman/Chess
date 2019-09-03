@@ -41,13 +41,17 @@ namespace chess
 					if(!isCheck(newLoc, board, colorSel)){//can't move into check and can't move passed check when castling
 						locations[j] = newLoc;
 						j++;
-						if(firstMove==0&&((Rook)board[7,location[1]]).isfirstMove()==0){//check if the king and rook have not been moved
-							if(board[location[0]+2,location[1]]==null&&board[7,location[1]]!=null){//check for possible castling move
-								int[] loc = {location[0]+2,location[1]};
-								if(board[7,location[1]].getType()==4){//check if the piece is a rook, color doesn't matter since firstMove takes care of if it is an enemy piece
-								   if(!isCheck(loc, board, colorSel)&&!isCheck(location, board, colorSel)){//check if the location will be check and if the king is already in check
-										locations[j] = loc;
-										j++;
+						if(board[7,location[1]]!=null){
+							if(board[7,location[1]].getType()==4){
+								if(firstMove==0&&((Rook)board[7,location[1]]).getFirstMove()==0){//check if the king and rook have not been moved
+									if(board[location[0]+2,location[1]]==null&&board[7,location[1]]!=null){//check for possible castling move
+										int[] loc = {location[0]+2,location[1]};
+										if(board[7,location[1]].getType()==4){//check if the piece is a rook, color doesn't matter since firstMove takes care of if it is an enemy piece
+										   if(!isCheck(loc, board, colorSel)&&!isCheck(location, board, colorSel)){//check if the location will be check and if the king is already in check
+												locations[j] = loc;
+												j++;
+											}
+										}
 									}
 								}
 							}
@@ -68,13 +72,17 @@ namespace chess
 					if(!isCheck(newLoc, board, colorSel)){//can't move into check and can't move passed check when castling
 						locations[j] = newLoc;
 						j++;
-						if(firstMove==0&&((Rook)board[0,location[1]]).isfirstMove()==0){//check if the king and rook have not been moved
-							if(board[location[0]-2,location[1]]==null&&board[0,location[1]]!=null){//check for possible castling move
-								int[] loc = {location[0]-2,location[1]};
-								if(board[0,location[1]].getType()==4){//check if the piece is a rook, color doesn't matter since firstMove takes care of if it is an enemy piece
-								   if(!isCheck(loc, board, colorSel)&&!isCheck(location, board, colorSel)){//check if the location will be check and if the king is already in check
-										locations[j] = loc;
-										j++;
+						if(board[0,location[1]]!=null){
+							if(board[0,location[1]].getType()==4){
+								if(firstMove==0&&((Rook)board[0,location[1]]).getFirstMove()==0){//check if the king and rook have not been moved
+									if(board[location[0]-2,location[1]]==null&&board[0,location[1]]!=null){//check for possible castling move
+										int[] loc = {location[0]-2,location[1]};
+										if(board[0,location[1]].getType()==4){//check if the piece is a rook, color doesn't matter since firstMove takes care of if it is an enemy piece
+										   if(!isCheck(loc, board, colorSel)&&!isCheck(location, board, colorSel)){//check if the location will be check and if the king is already in check
+												locations[j] = loc;
+												j++;
+											}
+										}
 									}
 								}
 							}
@@ -201,6 +209,14 @@ namespace chess
 		
 		public int getID(){
 			return id;
+		}
+		
+		public int getFirstMove(){
+			return firstMove;
+		}
+		
+		public void setFirstMove(int f){//for saving and loading purposes
+			firstMove = f;
 		}
 		
 		public bool isCheck(int[] loc, ChessPiece[,] board, int colorSel){//check if a move is going to be check or it if the king is in check, call after every turn 
