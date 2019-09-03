@@ -138,8 +138,12 @@ namespace chess
 			return id;
 		}
 		
-		public int isfirstMove(){
+		public int getFirstMove(){
 			return firstMove;
+		}
+		
+		public void setFirstMove(int f){//for saving and loading purposes
+			firstMove = f;
 		}
 	}
 }
