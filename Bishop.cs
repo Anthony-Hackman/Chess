@@ -41,6 +41,7 @@ namespace chess
 								int[] newLoc = {location[0]+i , location[1]+i};
 								locations[j] = newLoc;
 								j++;
+								
 							}
 							else if(board[location[0]+i,location[1]+i].getPColor()!=pColor){//is an enemy piece on the board, is valid
 								int[] newLoc = {location[0]+i , location[1]+i};
