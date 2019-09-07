@@ -27,7 +27,7 @@ namespace chess
 		}
 
 		public int[][] moves(ChessPiece[,] board, int colorSel){
-			int[][] locations = new int[16][];
+			int[][] locations = new int[8][];
 			int i = 0;
 			//set of location[0]
 			int L1 = location[0]+1;

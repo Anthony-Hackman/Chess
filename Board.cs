@@ -184,7 +184,7 @@ namespace chess
 			chessPieces = pcs;
 			for(int i=0; i<chessPieces.Length; i++){
 				if(chessPieces[i].getLocation()[0]!=-1){
-					chessBoard[chessPieces[i].getLocation()[0],chessPieces[i].getLocation()[1]]=chessPieces[i];
+					chessBoard[chessPieces[i].getLocation()[0],chessPieces[i].getLocation()[1]]=pcs[i];
 				}
 			}
 		}
@@ -196,6 +196,15 @@ namespace chess
 		
 		public ChessPiece[,] getBoard(){
 			return chessBoard;
+		}
+		
+		public int[] findKing(int c){//returns the location of the king of the color passed in
+			for(int i=0; i<32; i++){
+				if(chessPieces[i].getType()==6&&chessPieces[i].getPColor()==c){//always returns at some point since there should always be a king of either color
+					return chessPieces[i].getLocation();
+				}
+			}
+			return new int[0];
 		}
 	}
 }

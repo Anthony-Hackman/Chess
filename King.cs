@@ -31,7 +31,7 @@ namespace chess
 			return type;
 		}
 
-		public int[][] moves(ChessPiece[,] board, int colorSel){
+		public int[][] moves(ChessPiece[,] board, int colorSel){//kingLoc only necessary so that the other pieces know if their move is safe to do
 			int[][] locations = new int[8][];
 			int j = 0;
 			//location[1] is up and down
@@ -219,7 +219,7 @@ namespace chess
 			firstMove = f;
 		}
 		
-		public bool isCheck(int[] loc, ChessPiece[,] board, int colorSel){//check if a move is going to be check or it if the king is in check, call after every turn 
+		public bool isCheck(int[] loc, ChessPiece[,] board, int colorSel){//check if a move is going to be check or it if the king is in check, call after every turn
 			int[][] pieceMoves;
 			int k = 0;
 			for(int i=0; i<8; i++){
@@ -227,10 +227,16 @@ namespace chess
 					if(board[i,j]!=null){//nested so that we don't call a function on a null piece
 						if(board[i,j].getPColor()!=pColor){//enemy piece
 							if(board[i,j].getType()==1){//pawn forward move doesn't count as an attack so it won't cause check unless it's a diagonal move
-								if(loc[0]==i+1&&loc[1]==j+1){
+								if(loc[0]==i+1&&loc[1]==j+1&&board[i,j].getPColor()!=colorSel){
 									return true;
 								}
-								if(loc[0]==i-1&&loc[1]==j+1){
+								if(loc[0]==i-1&&loc[1]==j+1&&board[i,j].getPColor()!=colorSel){
+									return true;
+								}
+								if(loc[0]==i+1&&loc[1]==j-1&&board[i,j].getPColor()==colorSel){
+									return true;
+								}
+								if(loc[0]==i-1&&loc[1]==j-1&&board[i,j].getPColor()==colorSel){
 									return true;
 								}
 							}
@@ -283,8 +289,69 @@ namespace chess
 			return false;
 		}
 		
-		public bool isCheckmate(){//call after a turn that comes up positive for isCheck
-			return false;
+		public bool isMoveSafe(int colorSel, ChessPiece[] pcs, int pNum, int[] moveLoc){//returns whether a move is safe or not
+			//if this list is empty it is checkmate
+			Board b;
+			ChessPiece[] p = new ChessPiece[32];
+			for(int i=0; i<pcs.Length; i++){//create a set of new pieces to be passed to the new board for checking
+				if(pcs[i].getType()==1){
+					p[i] = new Pawn(i,pcs[i].getPColor());
+					p[i].setLocation(pcs[i].getLocation()[0], pcs[i].getLocation()[1]);
+				}
+				if(pcs[i].getType()==2){
+					p[i] = new Knight(i,pcs[i].getPColor());
+					p[i].setLocation(pcs[i].getLocation()[0], pcs[i].getLocation()[1]);
+				}
+				if(pcs[i].getType()==3){
+					p[i] = new Bishop(i,pcs[i].getPColor());
+					p[i].setLocation(pcs[i].getLocation()[0], pcs[i].getLocation()[1]);
+				}
+				if(pcs[i].getType()==4){
+					p[i] = new Rook(i,pcs[i].getPColor());
+					p[i].setLocation(pcs[i].getLocation()[0], pcs[i].getLocation()[1]);
+				}
+				if(pcs[i].getType()==5){
+					p[i] = new Queen(i,pcs[i].getPColor());
+					p[i].setLocation(pcs[i].getLocation()[0], pcs[i].getLocation()[1]);
+				}
+				if(pcs[i].getType()==6){
+					p[i] = new King(i,pcs[i].getPColor());
+					p[i].setLocation(pcs[i].getLocation()[0], pcs[i].getLocation()[1]);
+				}
+				if(p[i].getLocation()[0]==moveLoc[0]&&p[i].getLocation()[1]==moveLoc[1]&&p[i].getType()!=6){//no piece can hold the same location
+					p[i].setLocation(-1, -1);
+				}
+			}
+			p[pNum].setLocation(moveLoc[0], moveLoc[1]);
+			b = new Board(colorSel, p);//create a new board with the new move location to check if it puts the king in check
+			int[] kingLoc = b.findKing(pcs[pNum].getPColor());//the kings location in the new board
+			if(((King)b.getBoard()[kingLoc[0],kingLoc[1]]).isCheck(kingLoc,b.getBoard(),colorSel)){//if the move is check return false
+				return false;
+			}
+			else{//if the move is safe return true
+				return true;
+			}
 		}
+		
+		
+		public bool isCheckMate(int colorSel, ChessPiece[] pcs, ChessPiece[,] board, int c){//can be used for both checkmate and stalemate
+			int[][] pMoves;//the moves for the piece being checked
+			for(int i=0; i<pcs.Length; i++){
+				if(pcs[i].getPColor()==c){
+					if(pcs[i].getLocation()[0]!=-1){
+						pMoves = pcs[i].moves(board, colorSel);
+						for(int j=0; j<pMoves.Length; j++){
+							if(pMoves[j]!=null){
+								if(isMoveSafe(colorSel, pcs, i, pMoves[j])){//if there is a safe move to be made it returns false
+									return false;
+								}
+							}
+						}
+					}
+				}
+			}
+			return true;//return true if no safe moves to be made
+		}
+		
 	}
 }

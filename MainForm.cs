@@ -135,6 +135,7 @@ namespace chess
 			saveBtn.Text = "Save Game";
 			saveBtn.Location = new Point(350,420);
 			Controls.Add(saveBtn);
+			checkGameState();
 		}
 		
 		private void changeTurn(){//handles all the turn change necessities
@@ -155,6 +156,7 @@ namespace chess
 					}
 				}
 			}
+			checkGameState();
 		}
 		
 		private int pieceSelect(){//piece selection menu for the pawn reaching end of board
@@ -195,6 +197,44 @@ namespace chess
 			return selection;
 		}
 		
+		
+		private void checkGameState(){//checks if the game is over via checkmate or stalemate
+			int[] kingLoc = game.findKing(turn);
+			if(((King)game.getBoard()[kingLoc[0],kingLoc[1]]).isCheck(kingLoc, game.getBoard(), colorSel)){
+				if(((King)game.getBoard()[kingLoc[0],kingLoc[1]]).isCheckMate(colorSel, game.getPieces(), game.getBoard(), turn)){//king is in check and no moves can be made "checkmate"
+					for(int i=0; i<8; i++){
+						for(int j=0; j<8; j++){
+							boardButtons[i,j].Enabled = false;//game is over disable all board buttons
+						}
+					}
+					Label gameOverLabel = new Label();
+					gameOverLabel.Size = new System.Drawing.Size(250, 13);
+					gameOverLabel.Text = "Game Over: Checkmate ";
+					if(turn==0){//if it was whites turn next and white is checkmated black wins
+						gameOverLabel.Text += "Black Wins";
+					}
+					else{//the opposite is true so white wins
+						gameOverLabel.Text += "White Wins";
+					}
+					gameOverLabel.Location = new Point(150,420);
+					Controls.Add(gameOverLabel);//display that the one side has been checkmated and tell who the winner is
+				}
+			}
+			else{
+				if(((King)game.getBoard()[kingLoc[0],kingLoc[1]]).isCheckMate(colorSel, game.getPieces(), game.getBoard(), turn)){//king is not in check but no moves can be made "stalemate"
+					for(int i=0; i<8; i++){
+						for(int j=0; j<8; j++){
+							boardButtons[i,j].Enabled = false;//game is over disable all board buttons
+						}
+					}
+					Label gameOverLabel = new Label();
+					gameOverLabel.Size = new System.Drawing.Size(250, 13);
+					gameOverLabel.Text = "Game Over: Stalemate";
+					gameOverLabel.Location = new Point(150,420);
+					Controls.Add(gameOverLabel);//display that the game is a stalemate
+				}
+			}
+		}
 		
 		
 		
@@ -263,7 +303,7 @@ namespace chess
 			
 			//handles the movement of pieces on the board
 			if(game.getBoard()[i,j]!=null){//a piece is selected on the board and not a blank space
-				ChessPiece curPiece = game.getBoard()[i,j];//current piece
+				ChessPiece curPiece = game.getBoard()[i,j];//the piece that was clicked
 				z=0;
 				if(moves==null||selectedPiece==null){//handles a weird case where selectedPiece somehow ends up null 
 					//and moves isn't null and handles first piece clicked for the persons turn
@@ -271,12 +311,16 @@ namespace chess
 					moves = curPiece.moves(game.getBoard(), colorSel);
 					while(z<moves.Length&&moves[z]!=null){//once the possible moves are found set those locations to be clickable
 						if(game.getBoard()[moves[z][0], moves[z][1]]==null){
-							boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							if(((King)game.getBoard()[game.findKing(curPiece.getPColor())[0],game.findKing(curPiece.getPColor())[1]]).isMoveSafe(colorSel, game.getPieces(), curPiece.getID(), moves[z])){
+								boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							}
 							selectedPiece = curPiece;
 							z++;
 						}
 						else if(game.getBoard()[moves[z][0], moves[z][1]].getPColor()!=curPiece.getPColor()){
-							boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							if(((King)game.getBoard()[game.findKing(curPiece.getPColor())[0],game.findKing(curPiece.getPColor())[1]]).isMoveSafe(colorSel, game.getPieces(), curPiece.getID(), moves[z])){
+								boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							}
 							selectedPiece = curPiece;
 							z++;
 						}
@@ -298,12 +342,16 @@ namespace chess
 					moves = curPiece.moves(game.getBoard(), colorSel);
 					while(z<moves.Length&&moves[z]!=null){//once the possible moves are found set those locations to be clickable
 						if(game.getBoard()[moves[z][0], moves[z][1]]==null){
-							boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							if(((King)game.getBoard()[game.findKing(curPiece.getPColor())[0],game.findKing(curPiece.getPColor())[1]]).isMoveSafe(colorSel, game.getPieces(), curPiece.getID(), moves[z])){
+								boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							}
 							selectedPiece = curPiece;
 							z++;
 						}
 						else if(game.getBoard()[moves[z][0], moves[z][1]].getPColor()!=curPiece.getPColor()){//only allow movement to locations that aren't your own pieces
-							boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							if(((King)game.getBoard()[game.findKing(curPiece.getPColor())[0],game.findKing(curPiece.getPColor())[1]]).isMoveSafe(colorSel, game.getPieces(), curPiece.getID(), moves[z])){
+								boardButtons[moves[z][0], moves[z][1]].Enabled = true;
+							}
 							selectedPiece = curPiece;
 							z++;
 						}
@@ -401,6 +449,18 @@ namespace chess
 					game.getBoard()[selectedPiece.getLocation()[0], selectedPiece.getLocation()[1]] = null;
 					selectedPiece.setLocation(i,j);
 					selectedPiece = null;
+					for(int r=0; r<game.getPieces().Length; r++){
+						if(game.getPieces()[r].getLocation()[0]==-1){//this piece isn't on the board don't bother checking it
+							
+						}
+						else if(game.getBoard()[game.getPieces()[r].getLocation()[0],game.getPieces()[r].getLocation()[1]]==null){
+							game.getPieces()[r].setLocation(-1,-1);//the piece is no longer on the board, set its location to off the board
+						}
+						else if(game.getBoard()[game.getPieces()[r].getLocation()[0],game.getPieces()[r].getLocation()[1]].getID()!=game.getPieces()[r].getID()){//check if the piece is no longer on the board
+							game.getPieces()[r].setLocation(-1,-1);//the piece is no longer on the board, set its location to off the board
+						}
+					//this is for the save and load features
+					}
 					changeTurn();
 				}
 			}
@@ -526,7 +586,7 @@ namespace chess
 					else if(game.getBoard()[game.getPieces()[r].getLocation()[0],game.getPieces()[r].getLocation()[1]].getID()!=game.getPieces()[r].getID()){//check if the piece is no longer on the board
 						game.getPieces()[r].setLocation(-1,-1);//the piece is no longer on the board, set its location to off the board
 					}
-					//this is for the save and load features as well as the movesInCheck function
+					//this is for the save and load features
 				}
 				changeTurn();
 				
